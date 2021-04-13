@@ -13,6 +13,9 @@ import (
 func ParseIPv4Address(addr [16]uint8) string {
 	return fmt.Sprintf("%d.%d.%d.%d", addr[3], addr[2], addr[1], addr[0])
 }
+func GetRemoteAddress(packet []byte) string {
+	return fmt.Sprintf("%d.%d.%d.%d", packet[16], packet[17], packet[18], packet[19])
+}
 
 //根据pid查询应用名
 func QueryProcessName(pid uint32) string {

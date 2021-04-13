@@ -1,16 +1,13 @@
 package filter
 
 import (
-	"AwesomeProject/common"
 	"AwesomeProject/common/log"
 	"AwesomeProject/utils"
 	"github.com/imgk/divert-go"
 )
 
-func AppFilter(apps []string, session chan<- common.Session)  {
-	//filter := "outbound and !loopback and !ipv6 and (tcp or udp) and event == CONNECT"
-	filter := "outbound and !loopback and !ipv6 and udp and event == CONNECT"
-	hd, err := divert.Open(filter, divert.LayerSocket, divert.PriorityDefault, divert.FlagSniff|divert.FlagRecvOnly)
+func AppFilter(filter string, apps []string, rip chan<- string) {
+	hd, err := divert.Open(filter, divert.LayerSocket, divert.PriorityHighest, divert.FlagSniff|divert.FlagRecvOnly)
 	if err != nil {
 		log.Fatalf("App Filter divert.Open err : %v", err)
 	}
@@ -19,19 +16,18 @@ func AppFilter(apps []string, session chan<- common.Session)  {
 	buf := make([]byte, 1)
 	addr := divert.Address{}
 
-	for  {
+	for {
 		_, err := hd.Recv(buf, &addr)
-		if err != nil{
+		if err != nil {
 			log.Errorf("AppFilter hd.Recv err: %v", err)
 			continue
 		}
 		name := utils.QueryProcessName(addr.Socket().ProcessID)
 		if isExist(apps, name) {
-			session <- *common.NewSession(addr)
+			rip <- utils.ParseIPv4Address(addr.Socket().RemoteAddress)
 		}
 	}
 }
-
 
 //检测是否是需要过滤的应用
 func isExist(apps []string, name string) bool {

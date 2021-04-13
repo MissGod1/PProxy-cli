@@ -3,40 +3,50 @@ package filter
 import (
 	"AwesomeProject/common"
 	"AwesomeProject/common/log"
-	"fmt"
+	"AwesomeProject/utils"
 	"github.com/imgk/divert-go"
 )
 
 //Packet Filter
-func PacketFilter(ifIdx uint32, pBuf chan<- []byte, isExist func(session common.Session) bool) {
+func PacketFilter(filter string, address divert.Address, pBuf chan<- []byte, bBuf <-chan []byte, isExist func(ip string) bool) {
 	//windivert handle
-	//filter := fmt.Sprintf("ifIdx == %d and outbound and !loopback and ip and (tcp or udp)", ifIdx)
-	filter := fmt.Sprintf("ifIdx == %d and outbound and !loopback and ip and udp", ifIdx)
-	//filter :=  fmt.Sprintf("ifIdx == %d and outbound and !loopback and ip and udp.DstPort == 53", ifIdx)
-	hd, err := divert.Open(filter, divert.LayerNetwork, divert.FlagDefault-1, divert.FlagDefault)
+
+	hd, err := divert.Open(filter, divert.LayerNetwork, divert.PriorityDefault, divert.FlagDefault)
 	if err != nil {
 		log.Fatalf("divert.Open err = %v", err)
 	}
 	log.Infof("Start Packet Filter: %v", filter)
 
-	addr := divert.Address{}
+	//send to local packet
+	go func() {
+		address.Flags |= uint8(3) << 6
+		buf := make([]byte, 2048)
+		zero := make([]byte, 2048)
+		for {
+			copy(buf, zero) // 清零
+			n := copy(buf, <-bBuf)
+			_, err := hd.Send(buf, &address)
+			if err != nil {
+				log.Errorf("PacketFilter Filter hd.Send err: %v", err)
+				continue
+			}
+			go log.Infof("[Recv] %v", common.NewSession0(buf).String(), n)
+		}
+	}()
 
 	//recv packet
+	//buffer
+	buf := make([]byte, 2048)
+	addr := divert.Address{}
 	for {
-		//buffer
-		buf := make([]byte, 2048)
 		n, err := hd.Recv(buf, &addr)
 		if err != nil {
 			log.Errorf("PacketFilter Packet Filter err = %v", err)
 			continue
 		}
 
-		//udp test
-		//pBuf <- buf[:n]
-
-		//log.Println(buf[:n])
-		s := common.NewSession0(buf)
-		if isExist(*s) {
+		ip := utils.GetRemoteAddress(buf)
+		if isExist(ip) {
 			pBuf <- buf[:n]
 		} else {
 			hd.Send(buf[:n], &addr)
