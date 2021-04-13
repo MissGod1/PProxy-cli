@@ -22,7 +22,7 @@ func main() {
 	level := flag.String("log", "info", "Log Level")
 	udp := flag.Bool("udp", false, "enable udp mode")
 	tcp := flag.Bool("tcp", false, "enable tcp mode")
-	timeOut := flag.Duration("timeout", 1*time.Minute, "udp timeout, default 1m")
+	timeOut := flag.Duration("timeout", 1*time.Minute, "udp timeout")
 	flag.Parse()
 
 	//set log level
