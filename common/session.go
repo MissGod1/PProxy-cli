@@ -1,7 +1,7 @@
 package common
 
 import (
-	"AwesomeProject/utils"
+	"PProxy-cli/utils"
 	"fmt"
 	"github.com/imgk/divert-go"
 )
@@ -12,7 +12,7 @@ type Session struct {
 	localPort  uint16
 	remoteAddr string
 	remotePort uint16
-	protocol string
+	protocol   string
 }
 
 func layer(protocol uint8) string {
@@ -33,7 +33,7 @@ func NewSession(addr divert.Address) *Session {
 		localPort:  addr.Socket().LocalPort,
 		remoteAddr: utils.ParseIPv4Address(addr.Socket().RemoteAddress),
 		remotePort: addr.Socket().RemotePort,
-		protocol: layer(addr.Socket().Protocol),
+		protocol:   layer(addr.Socket().Protocol),
 	}
 }
 
@@ -42,17 +42,17 @@ func NewSession0(buf []byte) *Session {
 	localAddr := fmt.Sprintf("%d.%d.%d.%d", buf[12], buf[13], buf[14], buf[15])
 	remoteAddr := fmt.Sprintf("%d.%d.%d.%d", buf[16], buf[17], buf[18], buf[19])
 	//ip报文头长度
-	headerLen := uint(buf[0] & 0xf) * 4
+	headerLen := uint(buf[0]&0xf) * 4
 	//TCP UDP报文偏移
 	offset := headerLen - 20
-	localPort := (uint16(buf[20 + offset]) << 8) | uint16(buf[21 + offset])
-	remotePort := (uint16(buf[22 + offset]) << 8) | uint16(buf[23 + offset])
+	localPort := (uint16(buf[20+offset]) << 8) | uint16(buf[21+offset])
+	remotePort := (uint16(buf[22+offset]) << 8) | uint16(buf[23+offset])
 	return &Session{
 		localAddr:  localAddr,
 		localPort:  localPort,
 		remoteAddr: remoteAddr,
 		remotePort: remotePort,
-		protocol: layer(buf[9]),
+		protocol:   layer(buf[9]),
 	}
 }
 

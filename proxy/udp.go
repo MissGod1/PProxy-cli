@@ -1,7 +1,7 @@
 package proxy
 
 import (
-	"AwesomeProject/common/log"
+	"PProxy-cli/common/log"
 	"errors"
 	"fmt"
 	core2 "github.com/eycorsican/go-tun2socks/core"

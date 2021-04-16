@@ -1,8 +1,8 @@
 package filter
 
 import (
-	"AwesomeProject/common/log"
-	"AwesomeProject/utils"
+	"PProxy-cli/common/log"
+	"PProxy-cli/utils"
 	"github.com/imgk/divert-go"
 )
 

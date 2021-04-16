@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"AwesomeProject/common/log"
+	"PProxy-cli/common/log"
 	"fmt"
 	"github.com/imgk/divert-go"
 	"golang.org/x/sys/windows"

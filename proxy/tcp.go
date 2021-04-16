@@ -10,13 +10,13 @@ import (
 	sscore "github.com/shadowsocks/go-shadowsocks2/core"
 	sssocks "github.com/shadowsocks/go-shadowsocks2/socks"
 
-	"AwesomeProject/common/log"
+	"PProxy-cli/common/log"
 	"github.com/eycorsican/go-tun2socks/core"
 )
 
 type tcpHandler struct {
-	cipher  sscore.Cipher
-	server  string
+	cipher sscore.Cipher
+	server string
 }
 
 func (h *tcpHandler) handleInput(conn net.Conn, input io.ReadCloser) {
@@ -41,8 +41,8 @@ func NewTCPHandler(server, cipher, password string) core.TCPConnHandler {
 		log.Errorf("failed to pick a cipher: %v", err)
 	}
 	return &tcpHandler{
-		cipher:  ciph,
-		server:  server,
+		cipher: ciph,
+		server: server,
 	}
 }
 

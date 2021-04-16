@@ -1,11 +1,11 @@
 package main
 
 import (
-	"AwesomeProject/common"
-	"AwesomeProject/common/log"
-	"AwesomeProject/filter"
-	"AwesomeProject/proxy"
-	"AwesomeProject/utils"
+	"PProxy-cli/common"
+	"PProxy-cli/common/log"
+	"PProxy-cli/filter"
+	"PProxy-cli/proxy"
+	"PProxy-cli/utils"
 	"flag"
 	"fmt"
 	"github.com/eycorsican/go-tun2socks/core"
@@ -70,13 +70,13 @@ func main() {
 				mutex.Lock()
 				remoteMap[ip] = struct{}{}
 				mutex.Unlock()
-				go log.Infof("[CONNECT] %v", ip)
+				log.Infof("[CONNECT] %v", ip)
 			case buf := <-pBuf:
 				_, err := stack.Write(buf)
 				if err != nil {
-					go log.Errorf("stack.Write err: %v", err)
+					log.Errorf("stack.Write err: %v", err)
 				}
-				go log.Infof("[Send] %v", common.NewSession0(buf), len(buf))
+				log.Infof("[Send] %v", common.NewSession0(buf), len(buf))
 			}
 
 		}

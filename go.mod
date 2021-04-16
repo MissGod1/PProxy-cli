@@ -1,4 +1,4 @@
-module AwesomeProject
+module PProxy-cli
 
 go 1.15
 

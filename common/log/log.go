@@ -1,16 +1,15 @@
 package log
 
-import "log"
-
 const (
-	DEBUG   = iota
+	DEBUG = iota
 	INFO
-	ERROR
 	WARNING
+	ERROR
 	NONE
 )
 
 var level = INFO
+var logger = NewLogger()
 
 func SetLevel(_level int) {
 	level = _level
@@ -18,28 +17,28 @@ func SetLevel(_level int) {
 
 func Debugf(msg string, args ...interface{}) {
 	if level <= DEBUG {
-		log.Printf("[ DEBUG ] " + msg, args)
+		logger.Printf("[ DEBUG ] "+msg, args)
 	}
 }
 
 func Infof(msg string, args ...interface{}) {
 	if level <= INFO {
-		log.Printf("[ INFO  ] " + msg, args)
+		logger.Printf("[ INFO  ] "+msg, args)
 	}
 }
 
 func Errorf(msg string, args ...interface{}) {
 	if level <= ERROR {
-		log.Printf("[ ERROR ] " + msg, args)
+		logger.Printf("[ ERROR ] "+msg, args)
 	}
 }
 
 func Warningf(msg string, args ...interface{}) {
 	if level <= WARNING {
-		log.Printf("[WARNING] " + msg, args)
+		logger.Printf("[WARNING] "+msg, args)
 	}
 }
 
 func Fatalf(msg string, args ...interface{}) {
-	log.Fatalf(msg, args)
+	logger.Fatalf(msg, args)
 }
