@@ -8,13 +8,14 @@ import (
 	"PProxy-cli/utils"
 	"flag"
 	"fmt"
-	"github.com/eycorsican/go-tun2socks/core"
 	"os"
 	"os/signal"
 	"strings"
 	"sync"
 	"syscall"
 	"time"
+
+	"github.com/eycorsican/go-tun2socks/core"
 )
 
 func main() {
@@ -22,7 +23,7 @@ func main() {
 	level := flag.String("log", "info", "Log Level")
 	udp := flag.Bool("udp", false, "enable udp mode")
 	tcp := flag.Bool("tcp", false, "enable tcp mode")
-	timeOut := flag.Duration("timeout", 1*time.Minute, "udp timeout")
+	timeOut := flag.Duration("timeout", 10*time.Minute, "udp timeout")
 	flag.Parse()
 
 	//set log level
@@ -83,8 +84,8 @@ func main() {
 	}()
 
 	//mode
-	appFilter := "outbound and !loopback and !ipv6 and event == CONNECT and "
-	packetFilter := fmt.Sprintf("ifIdx == %d and outbound and !loopback and ip and ", addr.Network().InterfaceIndex)
+	appFilter := fmt.Sprintf("outbound and !loopback and !ipv6 and remoteAddr != %s and event == CONNECT and ", config.Server) // Socket
+	packetFilter := fmt.Sprintf("ifIdx == %d and outbound and !loopback and ip and remoteAddr != %s and ", addr.Network().InterfaceIndex, config.Server)
 	if (*udp && *tcp) || (!*udp && !*tcp) {
 		appFilter += "(tcp or udp)"
 		packetFilter += "(tcp or udp)"
